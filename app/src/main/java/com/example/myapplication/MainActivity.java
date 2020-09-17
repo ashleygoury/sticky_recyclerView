@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.myapplication.model.PunchEntity;
 import com.example.myapplication.ui.PunchAdapter;
+import com.example.myapplication.ui.RecyclerItemClickListener;
 import com.example.myapplication.ui.RecyclerSectionItemDecoration;
 import com.example.myapplication.utilities.SampleData;
 
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerViewShift);
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewShift);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL,
                 false));
@@ -43,11 +46,23 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(new PunchAdapter(getLayoutInflater(),
                 punchEntities,
                 R.layout.item_view));
+
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(MainActivity.this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "Hours =  " + punchEntities.get(position).getHours(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onLongItemClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "This is long pressed!!!", Toast.LENGTH_SHORT).show();
+            }
+        }));
     }
 
     private List<PunchEntity> getPunchDetails() {
         SampleData sampleData = new SampleData();
-        List<PunchEntity> punchEntities = sampleData.getData();
+        punchEntities = sampleData.getData();
         return punchEntities;
     }
 
