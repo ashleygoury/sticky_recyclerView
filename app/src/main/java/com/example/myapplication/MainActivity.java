@@ -2,11 +2,10 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -15,19 +14,16 @@ import com.example.myapplication.model.PunchEntity;
 import com.example.myapplication.ui.PunchAdapter;
 import com.example.myapplication.ui.RecyclerItemClickListener;
 import com.example.myapplication.ui.RecyclerSectionItemDecoration;
-import com.example.myapplication.ui.SwipeController;
-import com.example.myapplication.ui.SwipeControllerActions;
+import com.example.myapplication.ui.SwipeHelper;
 import com.example.myapplication.utilities.SampleData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerViewShift;
     private List<PunchEntity> punchEntities = new ArrayList<>();
     private PunchAdapter mPunchAdapter;
     private DividerItemDecoration mDividerItemDecoration;
-    SwipeController swipeController = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,43 +43,55 @@ public class MainActivity extends AppCompatActivity {
                         getSectionCallback(punchEntities));
         recyclerView.addItemDecoration(sectionItemDecoration);
 
-        swipeController = new SwipeController(new SwipeControllerActions() {
-            @Override
-            public void onRightClicked(int position) {
-                Toast.makeText(MainActivity.this, "Right on pos " + position, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onLeftClicked(int position) {
-                Toast.makeText(MainActivity.this, "Left on pos " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(recyclerView);
-
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-
         recyclerView.setAdapter(new PunchAdapter(getLayoutInflater(),
                 punchEntities,
                 R.layout.item_view));
 
+
+
+        SwipeHelper swipeHelper = new SwipeHelper(this) {
+            @Override
+            public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                underlayButtons.add(new SwipeHelper.UnderlayButton(
+                        "Delete",
+                        0,
+                        Color.parseColor("#FF3C30"),
+                        new SwipeHelper.UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(final int pos) {
+                                Toast.makeText(getApplicationContext(), "You clicked like on item position " + pos, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                ));
+                underlayButtons.add(new SwipeHelper.UnderlayButton(
+                        "Edit",
+                        0,
+                        Color.parseColor("#FF9502"),
+                        new SwipeHelper.UnderlayButtonClickListener() {
+                            @Override
+                            public void onClick(int pos) {
+                                Toast.makeText(getApplicationContext(), "You clicked like on item position " + pos, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                ));
+            }
+        };
+        swipeHelper.attachToRecyclerView(recyclerView);
+
+
+
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(MainActivity.this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-//                Toast.makeText(MainActivity.this, "Hours =  " + punchEntities.get(position).getHours(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Hours =  " + punchEntities.get(position).getHours(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onLongItemClick(View view, int position) {
-//                Toast.makeText(MainActivity.this, "This is long pressed!!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "This is long pressed!!!", Toast.LENGTH_SHORT).show();
             }
         }));
+
     }
 
     private List<PunchEntity> getPunchDetails() {
@@ -114,30 +122,3 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 }
-
-
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        recyclerViewShift = findViewById(R.id.recyclerViewShift);
-//        initRecyclerView();
-//
-//        punchEntities.addAll(SampleData.getData());
-//        for (PunchEntity punchEntity : punchEntities) {
-//            Log.i("Data", punchEntity.toString());
-//        }
-//    }
-//
-//    private void initRecyclerView() {
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        recyclerViewShift.setLayoutManager(layoutManager);
-//        recyclerViewShift.setHasFixedSize(true);
-//        mPunchAdapter = new PunchAdapter(punchEntities, this);
-//        recyclerViewShift.setAdapter(mPunchAdapter);
-//
-//        mDividerItemDecoration = new DividerItemDecoration(recyclerViewShift.getContext(),
-//                layoutManager.getOrientation());
-//        recyclerViewShift.addItemDecoration(mDividerItemDecoration);
-//
-//    }
-//}
