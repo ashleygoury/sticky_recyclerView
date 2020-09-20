@@ -3,4 +3,6 @@
     <string name="txtDate">Date</string>
     <string name="txtBreaks">Breaks</string>
     <string name="txtHours">Hours</string>
+    <string name="action_delete">DElete</string>
+    <string name="action_archive">Edit</string>
 </resources>
